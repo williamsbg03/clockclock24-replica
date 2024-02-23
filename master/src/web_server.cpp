@@ -15,6 +15,7 @@ void server_start()
   _server.on("/time", HTTP_POST, handle_post_time);
   _server.on("/adjust", HTTP_POST, handle_post_adjust);
   _server.on("/mode", HTTP_POST, handle_post_mode);
+  _server.on("/hourformat", HTTP_POST, handle_post_hourformat);
   _server.on("/sleep", HTTP_POST, handle_post_sleep);
   _server.on("/connection", HTTP_POST, handle_post_connection);
   Serial.println("WebServer setup done");
@@ -58,11 +59,12 @@ void handle_get_config()
     strncat(s_time, "]", sizeof(2));
     snprintf(payload, sizeof(payload), 
       "{\"clock_mode\":%d,"
+      "\"hour_format\":%d,"
       "\"wireless_mode\":%d,"
       "\"ssid\":\"%s\","
       "\"password\":\"%s\","
       "\"sleep_time\":%s}",
-      get_clock_mode(), get_connection_mode(), get_ssid(), get_password(), s_time);
+      get_clock_mode(), get_hour_format(), get_connection_mode(), get_ssid(), get_password(), s_time);
   }
   _server.send(200, "application/json", payload);
 }
@@ -118,6 +120,14 @@ void handle_post_mode()
   Serial.println("Handle POST /mode");
   if (_server.hasArg("mode"))
     set_clock_mode(_server.arg("mode").toInt());
+  _server.send(200, "text/plain", "");
+}
+
+void handle_post_hourformat() 
+{
+  Serial.println("Handle POST /hourformat");
+  if (_server.hasArg("format"))
+    set_hour_format(_server.arg("format").toInt());
   _server.send(200, "text/plain", "");
 }
 

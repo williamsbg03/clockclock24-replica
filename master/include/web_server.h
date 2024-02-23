@@ -59,6 +59,11 @@ void handle_post_adjust();
 void handle_post_mode();
 
 /**
+ * Handles POST /timeformat
+*/
+void handle_post_hourformat();
+
+/**
  * Handles POST /sleep
 */
 void handle_post_sleep();

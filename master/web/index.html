@@ -252,6 +252,11 @@
 <div id="modes"></div>
 <div class="spacer"></div>
 <div class="title">
+  Hour Format
+</div>
+<div id="hourFormats"></div>
+<div class="spacer"></div>
+<div class="title">
   Sleep Time
 </div>
 <div id="days"></div>
@@ -288,6 +293,8 @@
 
   // Current selected animation mode
   let selectedMode = 0
+// Current selected hour format
+  let selectedHourFormat = 0
   // Current selected mode
   let selectedClock = undefined
   // Current selected day
@@ -313,6 +320,15 @@
     for (let m of modes)
       html += `<div id="mode-${i}" class="btn ${i === selectedMode ? "active" : ""}" onclick="selectMode(${i++})">${m}</div>`
     document.getElementById("modes").innerHTML = html
+  }
+
+  function genHourFormats() {
+    let hourFormats = ["12 HOUR", "24 HOUR"]
+    let html = ""
+    let i = 0
+    for (let m of hourFormats)
+      html += `<div id="format-${i}" class="btn ${i === selectedHourFormat ? "active" : ""}" onclick="selectHourFormat(${i++})">${m}</div>`
+    document.getElementById("hourFormats").innerHTML = html
   }
 
   // Makes the full clock
@@ -365,6 +381,14 @@
     selectedMode = mode
     document.getElementById("mode-" + selectedMode).classList.add("active")
     saveMode(selectedMode)
+  }
+
+  function selectHourFormat(format) {
+    if(selectedHourFormat !== undefined)
+      document.getElementById("format-" + selectedHourFormat).classList.remove("active")
+      selectedHourFormat = format
+    document.getElementById("format-" + selectedHourFormat).classList.add("active")
+    saveHourFormat(selectedHourFormat)
   }
 
   // Called on buttons clicks to select the day
@@ -440,6 +464,7 @@
   // Makes all the HTML elements
   genClocks()
   genModes()
+  genHourFormats()
   genDays()
 
   /* Server calls */
@@ -471,6 +496,7 @@
     if(selectedDay !== undefined)
       genHours(selectedDay)
     selectMode(res.clock_mode)
+    selectHourFormat(res.hour_format)
     selectConnection(res.wireless_mode)
     document.getElementById("ssid").value = ssid = res.ssid
     document.getElementById("password").value = password = res.password
@@ -495,6 +521,15 @@
     fetch("/mode", {
       method: "post",
       body: f,
+    })
+  }
+
+  function saveHourFormat(hourFormat) {
+    let f = new FormData()
+    f.append("format", hourFormat.toString())
+    fetch("/hourformat", {
+      method: "post",
+      body: f
     })
   }
 
@@ -563,6 +598,15 @@
     [270, 90],
     [270, 90],
     [270, 90]
+  ]
+
+  const digit_12hour_empty = [
+    [225, 225],
+    [225, 225],
+    [225, 225],
+    [225, 225],
+    [225, 225],
+    [225, 225]
   ]
 
   // Number's digits
@@ -746,8 +790,13 @@
   // Sets a digit
   // 0 <= index < 4
   function setDigit(index, digit, direction, secs) {
-    setHalfDigit(index*2, digit.slice(0, 3), direction, secs)
-    setHalfDigit(index*2 + 1, digit.slice(3, 6), direction, secs)
+    if (index == 0 && digit == digits[0]) {
+      setHalfDigit(index*2, digit_12hour_empty.slice(0, 3), direction, secs)
+      setHalfDigit(index*2 + 1, digit_12hour_empty.slice(3, 6), direction, secs)
+    } else {
+      setHalfDigit(index*2, digit.slice(0, 3), direction, secs)
+      setHalfDigit(index*2 + 1, digit.slice(3, 6), direction, secs)
+    }
   }
 
   // Sets stop position
@@ -786,10 +835,18 @@
   // Last time setted on clock
   let lastTime
   
+  function getTwelveHourFormat(d) {
+    const hours = (d.getHours() % 12 || 12).toString().padStart(2, "0")
+    const minutes = (d.getMinutes().toString()).padStart(2, "0")
+    const seconds = (d.getSeconds().toString()).padStart(2, "0")
+    console.log(hours, minutes, seconds)
+    return hours + minutes + seconds
+  }
+  
   // Sets current time on clock
   function setTime() {
     const d = new Date();
-    const time = d.toTimeString().substring(0,5).replace(':', '')
+    const time = selectedHourFormat == 0 ? getTwelveHourFormat(d) : d.toTimeString().substring(0,5).replace(':', '')
     const day = (d.getDay() + 6) % 7
     const hours = d.getHours()
     if (time !== lastTime && sleep[day][hours] === 0) {

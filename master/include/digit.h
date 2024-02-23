@@ -113,6 +113,15 @@ const t_digit digit_null = {
   270, 270
 };
 
+const t_digit digit_single_digit_hour {
+  225, 225,
+  225, 225,
+  225, 225,
+  225, 225,
+  225, 225,
+  225, 225
+};
+
 const t_digit digit_I = {
   270, 90,
   270, 90,

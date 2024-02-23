@@ -105,12 +105,13 @@ void loop() {
 void set_time()
 {
   int day_week = (weekday() + 5) % 7;
+  int current_hour = get_hour_format() == H12 ? hourFormat12() : hour();
   if(get_sleep_time(day_week, hour()))
     stop();
-  else if(hour() != last_hour || minute() != last_minute)
+  else if(current_hour != last_hour || minute() != last_minute)
   {
     is_stopped = false;
-    last_hour = hour();
+    last_hour = current_hour;
     last_minute = minute();
     switch(get_clock_mode())
     {
@@ -129,7 +130,7 @@ void set_time()
 
 void set_lazy()
 {
-  set_speed(200);
+  set_speed(400);
   set_acceleration(100);
   set_direction(MIN_DISTANCE);
   set_clock_time(last_hour, last_minute);
@@ -137,7 +138,7 @@ void set_lazy()
 
 void set_fun()
 {
-  set_speed(400);
+  set_speed(800);
   set_acceleration(150);
   set_direction(CLOCKWISE2);
   set_clock_time(last_hour, last_minute);
@@ -150,14 +151,14 @@ void set_waves()
   set_direction(MIN_DISTANCE);
   set_clock(d_IIII);
   _delay(9000);
-  set_speed(400);
-  set_acceleration(100);
+  set_speed(800);
+  set_acceleration(150);
   set_direction(CLOCKWISE2);
   t_full_clock clock = get_clock_state_from_time(last_hour, last_minute);
   for (int i = 0; i <8; i++)
   {
     set_half_digit(i, clock.digit[i/2].halfs[i%2]);
-    delay(400);
+    delay(300);
   }
 }
 
@@ -169,8 +170,8 @@ void stop()
     last_hour = -1;
     last_minute = -1;
     set_direction(MIN_DISTANCE);
-    set_speed(200);
-    set_acceleration(100);
+    set_speed(800);
+    set_acceleration(150);
     set_clock(d_stop);
   }
 }

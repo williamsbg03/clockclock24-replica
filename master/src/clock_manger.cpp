@@ -122,7 +122,7 @@ t_full_clock get_clock_state_from_time(int h, int m)
   int d2 = m / 10;
   int d3 = m - d2 * 10;
   Serial.printf("Set time: %d:%d\n", h, m);
-  t_full_clock clock_state = {_digits[d0], _digits[d1], _digits[d2], _digits[d3]};
+  t_full_clock clock_state = {d0 == 0 ? digit_single_digit_hour : _digits[d0], _digits[d1], _digits[d2], _digits[d3]};
   return clock_state;
 }
 

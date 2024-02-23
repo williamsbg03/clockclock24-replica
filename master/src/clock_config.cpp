@@ -11,11 +11,13 @@ int _clock_timezone;
 int _wireless_mode;
 char _ssid[64];
 char _password[64];
+int _hour_format;
 
 void begin_config()
 {
   prefs.begin("clockclock24");
   _clock_mode = prefs.getInt("clock_mode", LAZY);
+  _hour_format = prefs.getInt("hour_Format", H12);
   _wireless_mode = prefs.getInt("wireless_mode", HOTSPOT);
   _clock_timezone = prefs.getInt("clock_timezone", 0);
   strncpy(_ssid, prefs.getString("ssid", "").c_str(), sizeof(_ssid));
@@ -35,6 +37,7 @@ void clear_config()
 {
   prefs.clear();
   _clock_mode = LAZY;
+  _hour_format = H12;
   _wireless_mode = HOTSPOT;
   strncpy(_ssid, "", sizeof(_ssid));
   strncpy(_password, "", sizeof(_password));
@@ -44,6 +47,11 @@ void clear_config()
 int get_clock_mode()
 {
   return _clock_mode;
+}
+
+int get_hour_format()
+{
+  return _hour_format;
 }
 
 bool get_sleep_time(int day, int hour)
@@ -75,6 +83,12 @@ void set_clock_mode(int value)
 {
   _clock_mode = value;
   prefs.putInt("clock_mode", value);
+}
+
+void set_hour_format(int value)
+{
+  _hour_format = value;
+  prefs.putInt("hour_format", value);
 }
 
 void set_sleep_time(int day, int hour, bool value)

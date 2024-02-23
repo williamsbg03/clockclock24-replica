@@ -24,6 +24,15 @@ enum clock_modes
 };
 
 /**
+ * Clock hour format
+ */
+enum hour_formats
+{
+  H12,
+  H24
+};
+
+/**
  * Load configuration from the EEPROM
  */
 void begin_config();
@@ -112,5 +121,16 @@ void set_ssid(const char *value);
  * @param value   password string
  */
 void set_password(const char *value);
+
+/**
+ * Gets current hour format
+ */
+int get_hour_format();
+
+/**
+ * Sets hour format
+ * @param value mode value of type hour_formats
+ */
+void set_hour_format(int value);
 
 #endif
